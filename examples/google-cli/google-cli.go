@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ernesto-jimenez/scraperboard"
 	"net/url"
 	"strings"
+
+	"github.com/ernesto-jimenez/scraperboard"
 )
 
 func main() {
@@ -37,12 +38,11 @@ type Result struct {
 
 var scraperXML = `
 	<Scraper>
-		<Each name="results" selector="#search ol > li">
-			<Property name="title" selector="h3 a"/>
-			<Property name="url" selector="h3 a">
+		<Each name="results" selector="#search ol li.g">
+			<Property name="title" selector="a"/>
+			<Property name="url" selector="a">
 				<Filter type="first"/>
 				<Filter type="attr" argument="href"/>
-				<Filter type="regex" argument="q=([^&amp;]+)"/>
 			</Property>
 		</Each>
 	</Scraper>

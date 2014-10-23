@@ -13,6 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"code.google.com/p/go.net/html"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -75,10 +77,24 @@ func NewScraper(r io.Reader) (scraper Scraper, err error) {
 
 // ScrapeFromURL scrapes the provided URL and returns a map[string]interface{} that can be encoded into JSON or go structs
 func (s *Scraper) ScrapeFromURL(url string) (result map[string]interface{}, err error) {
-	doc, err := goquery.NewDocument(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return
 	}
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 (Dart) Safari/537.36")
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+
+	root, err := html.Parse(res.Body)
+	if err != nil {
+		return
+	}
+	doc := goquery.NewDocumentFromNode(root)
+
 	return s.scrape(doc)
 }
 
